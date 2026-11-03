@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "St. Louis Guide"
+description = "A one-page guide to St. Louis, Missouri, featuring its signature food, quick facts, current state leader, state bird, and an interactive list of favorite things."
+version = "1.0.0"
+id = "artifacts/st-louis-guide"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 23198
+
+[services.development]
+run = "pnpm --filter @workspace/st-louis-guide run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/st-louis-guide", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/st-louis-guide/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "23198"
+BASE_PATH = "/"
