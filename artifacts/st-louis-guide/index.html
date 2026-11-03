@@ -1,24 +1,123 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-    <title>St. Louis Guide</title>
-    <meta name="description" content="St. Louis Guide — built on Replit. Update this description to reflect the app." />
-    <meta name="robots" content="index, follow" />
-    <meta property="og:title" content="St. Louis Guide" />
-    <meta property="og:description" content="St. Louis Guide — built on Replit. Update this description to reflect the app." />
-    <meta property="og:type" content="website" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="St. Louis Guide" />
-    <meta name="twitter:description" content="St. Louis Guide — built on Replit. Update this description to reflect the app." />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A neighborly field guide to St. Louis, Missouri: local flavor, a few facts, and things worth loving.">
+    <meta name="theme-color" content="#f3efe3">
+    <title>St. Louis, in good company — a local field guide</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='19' fill='%23315d5c'/%3E%3Ctext x='20' y='25' text-anchor='middle' font-family='Georgia' font-size='12' fill='%23f3efe3'%3ESTL%3C/text%3E%3C/svg%3E">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css">
+    <script src="./script.js" defer></script>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div class="page-shell">
+      <header class="wrap topline">
+        <a class="brand" href="#top" aria-label="St. Louis field guide home">
+          <span class="brand-mark" aria-hidden="true">STL</span>
+          <span>A local field guide</span>
+        </a>
+        <nav aria-label="On this page">
+          <a href="#food">A good bite</a>
+          <a href="#facts">The essentials</a>
+          <a href="#likes">Your list</a>
+        </nav>
+      </header>
+
+      <main id="top">
+        <section class="wrap hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Missouri · Mississippi river country</p>
+            <h1 id="page-title">St. Louis,<br><span>in good</span><br>company.</h1>
+            <p class="hero-intro">A little river air, a plate made for passing around, and the kind of hometown pride that makes room at the table.</p>
+            <a class="hero-link" href="#food"><span aria-hidden="true">↓</span> Start with something delicious</a>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="arch-sun"></div>
+            <div class="gateway"></div>
+            <div class="river-line"></div>
+            <div class="hero-stamp">River city<br>since 1764</div>
+          </div>
+        </section>
+
+        <section class="facts-band" id="facts" aria-labelledby="facts-heading">
+          <div class="wrap facts-inner">
+            <h2 class="facts-heading" id="facts-heading">Quick facts</h2>
+            <ul class="facts-list">
+              <li><strong>Gateway to the West</strong>Our well-earned nickname</li>
+              <li><strong>301,578</strong>City population, 2020 Census</li>
+              <li><strong>1821</strong>Missouri became a state</li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="wrap guide-grid" aria-label="A few things to know">
+          <article class="food-feature" id="food" aria-labelledby="food-heading">
+            <p class="section-kicker">First things first · At the table</p>
+            <h2 class="section-title" id="food-heading">Toasted ravioli</h2>
+            <p class="food-copy">In St. Louis, ravioli takes a crisp, golden turn. These little pockets of savory filling are breaded, toasted, and usually passed around with warm marinara. It’s a St. Louis specialty—and a very good reason to save room.</p>
+            <figure class="food-photo">
+              <img src="./images/toasted-ravioli.jpg" alt="Golden toasted ravioli served with a bowl of red marinara sauce on a white plate">
+              <figcaption>Photo by <a href="https://commons.wikimedia.org/wiki/File:Napoli_Villa_-_May_2024_-_Sarah_Stierch_03.jpg" target="_blank" rel="noopener noreferrer">Missvain</a> · CC BY 4.0, via Wikimedia Commons</figcaption>
+            </figure>
+          </article>
+
+          <aside class="local-notes" aria-label="Local notes">
+            <section class="leader-note" aria-labelledby="leader-heading">
+              <div class="leader-seal" aria-hidden="true">MO</div>
+              <div>
+                <p class="section-kicker">Our state leader</p>
+                <h3 id="leader-heading">Mike Kehoe</h3>
+                <p>Governor of Missouri · current as of 2026</p>
+              </div>
+            </section>
+
+            <section class="bird-feature" aria-labelledby="bird-heading">
+              <div>
+                <p class="section-kicker">A bright spot in the branches</p>
+                <h2 class="section-title" id="bird-heading">State bird</h2>
+                <p>The Eastern bluebird brings a flash of sky-blue to Missouri’s open fields. Give it a tap.</p>
+              </div>
+              <figure class="bird-portrait">
+                <button class="bird-button" id="bird-button" type="button" aria-label="Make the Eastern bluebird flutter">
+                  <img class="bird" id="bluebird" src="./images/eastern-bluebird.jpg" alt="Eastern bluebird with vivid blue feathers and a warm rust-colored breast, perched on a branch">
+                </button>
+                <figcaption>Photo by <a href="https://commons.wikimedia.org/wiki/File:Eastern_Bluebird_MD1.jpg" target="_blank" rel="noopener noreferrer">Acroterion</a> · CC BY-SA 4.0, via Wikimedia Commons</figcaption>
+              </figure>
+            </section>
+          </aside>
+        </section>
+
+        <section class="likes-section" id="likes" aria-labelledby="likes-heading">
+          <div class="wrap likes-inner">
+            <div class="likes-intro">
+              <p class="section-kicker">Your turn, neighbor</p>
+              <h2 class="section-title" id="likes-heading">Things I like<br>about St. Louis</h2>
+              <p>Make this little guide your own. Add a favorite place, a familiar view, or the thing you’d miss first.</p>
+            </div>
+            <div class="likes-workspace">
+              <form class="like-form" id="like-form">
+                <label for="like-input">A thing you like about St. Louis</label>
+                <input id="like-input" name="like" type="text" maxlength="100" placeholder="A shady walk in Tower Grove…" autocomplete="off">
+                <button type="submit">Add to my list</button>
+              </form>
+              <ul class="like-list" id="like-list" aria-label="Things you like about St. Louis"></ul>
+              <p class="list-hint" id="list-status" aria-live="polite">Your list stays right here while this page is open.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div class="wrap footer-inner">
+          <p class="footer-mark">STL / MO</p>
+          <p>A warm hello from the banks of the Mississippi.</p>
+          <p>Made for curious visitors and proud locals.</p>
+        </div>
+      </footer>
+    </div>
   </body>
 </html>
