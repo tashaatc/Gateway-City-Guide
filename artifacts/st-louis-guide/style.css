@@ -157,7 +157,7 @@ h1 span {
   right: 20%;
   width: clamp(190px, 26vw, 310px);
   height: 84%;
-  border: clamp(19px, 3vw, 35px) solid var(--river);
+  border: clamp(19px, 3vw, 35px) solid #aeb4b9;
   border-bottom: 0;
   border-radius: 52% 52% 0 0 / 35% 35% 0 0;
   transform: scaleX(.86);
