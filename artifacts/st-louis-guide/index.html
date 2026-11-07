@@ -23,6 +23,7 @@
         <nav aria-label="On this page">
           <a href="#food">A good bite</a>
           <a href="#facts">The essentials</a>
+          <a href="#chat">Ask a local</a>
           <a href="#likes">Your list</a>
         </nav>
       </header>
@@ -89,6 +90,78 @@
               </figure>
             </section>
           </aside>
+        </section>
+
+        <section class="chat-section" id="chat" aria-labelledby="chat-heading">
+          <div class="wrap chat-intro">
+            <p class="section-kicker">The neighborhood desk · St. Louis city guide</p>
+            <h2 class="section-title" id="chat-heading">Ask a local.</h2>
+            <p>Need a place to start? Ask about the city and get a friendly answer rooted in this guide.</p>
+          </div>
+
+          <div class="wrap chat-layout">
+            <div class="chat-column">
+              <div class="chat-card">
+                <div class="chat-thread" id="chat-thread" role="log" aria-live="polite" aria-relevant="additions text">
+                  <article class="chat-message chat-message--assistant">
+                    <div class="chat-bubble">Well hey there. I can help you get acquainted with St. Louis—food, local facts, and a few good places to begin.</div>
+                    <p class="chat-meta">St. Louis city guide</p>
+                  </article>
+                </div>
+                <div class="chat-suggestions" aria-label="Try asking">
+                  <button class="prompt-chip" type="button" data-question="What should I eat first?">What should I eat first?</button>
+                  <button class="prompt-chip" type="button" data-question="What is St. Louis known for?">What is St. Louis known for?</button>
+                  <button class="prompt-chip" type="button" data-question="Tell me one quick fact about Missouri.">One quick Missouri fact</button>
+                </div>
+                <form class="chat-form" id="chat-form">
+                  <label class="visually-hidden" for="chat-input">Ask the St. Louis city guide</label>
+                  <textarea id="chat-input" name="message" rows="2" maxlength="2000" placeholder="Ask a question about St. Louis…" required></textarea>
+                  <button id="chat-send" type="submit">Send <span aria-hidden="true">↗</span></button>
+                </form>
+                <p class="chat-status" id="chat-status" aria-live="polite">Answers use the facts on this page. Your conversation stays in this tab.</p>
+              </div>
+            </div>
+
+            <aside class="prompt-lab" aria-labelledby="prompt-lab-heading">
+              <div class="prompt-lab-heading">
+                <p class="section-kicker">Your controls</p>
+                <h3 id="prompt-lab-heading">Prompt Lab</h3>
+                <p>Adjust how the guide responds. These settings apply to your next question.</p>
+              </div>
+
+              <div class="setting-control">
+                <div class="setting-label-row">
+                  <label for="temperature">Temperature</label>
+                  <output id="temperature-value" for="temperature">1.0</output>
+                </div>
+                <input id="temperature" type="range" min="0" max="2" step="0.1" value="1">
+                <p>Lower is more consistent; higher is more varied.</p>
+              </div>
+
+              <div class="setting-control">
+                <div class="setting-label-row">
+                  <label for="top-p">Top-p</label>
+                  <output id="top-p-value" for="top-p">0.95</output>
+                </div>
+                <input id="top-p" type="range" min="0" max="1" step="0.01" value="0.95">
+                <p>Controls how broadly the guide chooses words.</p>
+              </div>
+
+              <div class="setting-control">
+                <div class="setting-label-row">
+                  <label for="max-tokens">Max output tokens</label>
+                  <output id="max-tokens-value" for="max-tokens">300</output>
+                </div>
+                <input id="max-tokens" type="range" min="32" max="1024" step="1" value="300">
+                <p>Limits the length of each answer.</p>
+              </div>
+
+              <details class="system-prompt-details">
+                <summary>View the system prompt</summary>
+                <pre id="system-prompt-text">Loading the city guide prompt…</pre>
+              </details>
+            </aside>
+          </div>
         </section>
 
         <section class="likes-section" id="likes" aria-labelledby="likes-heading">

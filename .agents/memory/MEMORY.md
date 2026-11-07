@@ -1,0 +1,1 @@
+- [Direct Gemini model availability](gemini-model-availability.md) — Validate account-specific model access and latency with the configured direct API key.
