@@ -150,10 +150,19 @@ chatForm.addEventListener("submit", async (event) => {
   const pendingMessage = addChatMessage("assistant", "Let me think on that a moment…", "chat-message--pending");
   chatInput.value = "";
 
+  const controller = new AbortController();
+  const timeoutId = window.setTimeout(() => controller.abort(), 45_000);
+  const slowNoticeId = window.setTimeout(() => {
+    pendingMessage.querySelector(".chat-bubble").textContent =
+      "The guide is taking longer than usual. I’m still waiting for a reply…";
+    chatStatus.textContent = "Gemini is busy; this request will time out instead of waiting forever.";
+  }, 15_000);
+
   try {
     const response = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
       body: JSON.stringify({
         message,
         history: conversationHistory.slice(-20),
@@ -178,9 +187,16 @@ chatForm.addEventListener("submit", async (event) => {
     pendingMessage.classList.remove("chat-message--pending");
     pendingMessage.classList.add("chat-message--error");
     pendingMessage.querySelector(".chat-bubble").textContent =
-      error instanceof Error ? error.message : "The city guide could not answer just now.";
-    chatStatus.textContent = "Check your connection or try again in a moment.";
+      error instanceof DOMException && error.name === "AbortError"
+        ? "The city guide took too long to answer. Please try again."
+        : error instanceof Error
+          ? error.message
+          : "The city guide could not answer just now.";
+    chatInput.value = message;
+    chatStatus.textContent = "Your question is ready to send again.";
   } finally {
+    window.clearTimeout(timeoutId);
+    window.clearTimeout(slowNoticeId);
     isSendingChat = false;
     chatSend.disabled = false;
     chatSend.innerHTML = 'Send <span aria-hidden="true">↗</span>';

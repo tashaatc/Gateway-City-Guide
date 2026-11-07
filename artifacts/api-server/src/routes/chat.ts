@@ -14,6 +14,38 @@ import {
 
 const router: IRouter = Router();
 
+function getProviderStatus(error: unknown): number | undefined {
+  if (typeof error !== "object" || error === null || !("status" in error)) {
+    return undefined;
+  }
+
+  const status = (error as { status?: unknown }).status;
+  return typeof status === "number" ? status : undefined;
+}
+
+function isProviderTimeout(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+
+  const providerError = error as { name?: unknown; message?: unknown };
+  const name = typeof providerError.name === "string" ? providerError.name : "";
+  const message =
+    typeof providerError.message === "string" ? providerError.message : "";
+  return /timeout|timed out|aborted/i.test(`${name} ${message}`);
+}
+
+function isProviderBusy(error: unknown): boolean {
+  const status = getProviderStatus(error);
+  return (
+    status === 408 ||
+    status === 429 ||
+    status === 500 ||
+    status === 502 ||
+    status === 503 ||
+    status === 504 ||
+    isProviderTimeout(error)
+  );
+}
+
 router.get("/chat/system-prompt", (_req, res): void => {
   const response = GetChatSystemPromptResponse.parse({
     systemPrompt: CITY_GUIDE_SYSTEM_PROMPT,
@@ -59,7 +91,6 @@ router.post("/chat", async (req, res): Promise<void> => {
     return;
   }
 
-  const model = DEFAULT_CHAT_MODEL;
   const history = (parsed.data.history ?? []).map((entry) => ({
     role: entry.role === "assistant" ? ("model" as const) : ("user" as const),
     parts: [{ text: entry.content }],
@@ -69,31 +100,31 @@ router.post("/chat", async (req, res): Promise<void> => {
     const ai = new GoogleGenAI({
       apiKey,
       httpOptions: {
-        // Keep upstream retries bounded so a stalled provider does not leave
-        // the visitor's chat waiting indefinitely.
-        timeout: 120_000,
+        // Return an actionable error instead of leaving the visitor waiting.
+        timeout: 35_000,
         retryOptions: { attempts: 1 },
       },
     });
+    const contents = [
+      ...history,
+      { role: "user" as const, parts: [{ text: parsed.data.message }] },
+    ];
+    const config = {
+      systemInstruction: CITY_GUIDE_SYSTEM_PROMPT,
+      temperature: settings.temperature,
+      topP: settings.topP,
+      maxOutputTokens: settings.maxOutputTokens,
+      // This is a short local guide, so leave the token budget for the answer.
+      thinkingConfig: { thinkingBudget: 0 },
+    };
+
     const result = await ai.models.generateContent({
-      model,
-      contents: [
-        ...history,
-        { role: "user", parts: [{ text: parsed.data.message }] },
-      ],
-      config: {
-        systemInstruction: CITY_GUIDE_SYSTEM_PROMPT,
-        temperature: settings.temperature,
-        topP: settings.topP,
-        maxOutputTokens: settings.maxOutputTokens,
-        // This is a short local guide, so keep hidden reasoning minimal and
-        // leave the configured token budget for the visitor-facing answer.
-        thinkingConfig: { thinkingBudget: 0 },
-      },
+      model: DEFAULT_CHAT_MODEL,
+      contents,
+      config,
     });
 
     if (!result.text) {
-      req.log.warn("Gemini returned an empty city guide answer");
       res.status(502).json({
         error: "The city guide could not answer just now. Please try again.",
       });
@@ -111,14 +142,17 @@ router.post("/chat", async (req, res): Promise<void> => {
       reply: result.text,
       usage,
       settings,
-      model,
+      model: DEFAULT_CHAT_MODEL,
     });
 
     res.json(response);
   } catch (error) {
     req.log.error({ err: error }, "Gemini city guide request failed");
-    res.status(502).json({
-      error: "The city guide could not answer just now. Please try again.",
+    const providerIsBusy = isProviderBusy(error);
+    res.status(providerIsBusy ? 503 : 502).json({
+      error: providerIsBusy
+        ? "The city guide is busy right now. Please try again in a moment."
+        : "The city guide could not answer just now. Please try again.",
     });
   }
 });

@@ -16,7 +16,7 @@ export const DEFAULT_CHAT_SETTINGS = {
   maxOutputTokens: 300,
 };
 
-export const DEFAULT_CHAT_MODEL = "gemini-3.8-flash";
+export const DEFAULT_CHAT_MODEL = "gemini-3.1-flash-lite";
 
 export const CHAT_SETTING_BOUNDS = {
   temperature: { min: 0, max: 2 },
