@@ -694,3 +694,9 @@ footer { padding-block: 22px; background: var(--ink); color: #f8e9ec; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+.dish-inspector-note {
+  color: #285c36;
+  font-size: 0.9rem;
+  font-weight: 600;
+}

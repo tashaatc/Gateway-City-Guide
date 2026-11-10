@@ -118,3 +118,8 @@ export interface ApiError {
   error: string;
 }
 
+export type CreateDishPhoto422 = {
+  error: string;
+  reason: string;
+};
+

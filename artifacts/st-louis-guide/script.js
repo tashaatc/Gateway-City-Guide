@@ -148,6 +148,13 @@ function createDishPhotoCard(photo) {
     copy.append(caption);
   }
 
+  if (photo.inspectorNote) {
+    const note = document.createElement("p");
+    note.className = "dish-inspector-note";
+    note.textContent = photo.inspectorNote;
+    copy.append(note);
+  }
+
   const date = document.createElement("time");
   date.className = "dish-photo-date";
   date.dateTime = photo.createdAt;
@@ -219,7 +226,7 @@ dishUploadForm.addEventListener("submit", async (event) => {
 
   try {
     const image = await resizeDishPhoto(file);
-    dishUploadStatus.textContent = "Sharing your plate…";
+    dishUploadStatus.textContent = "Inspecting your photo for toasted ravioli…";
 
     const response = await fetch("/api/dishes", {
       method: "POST",
@@ -228,7 +235,7 @@ dishUploadForm.addEventListener("submit", async (event) => {
     });
     const savedPhoto = await response.json();
     if (!response.ok) {
-      throw new Error(savedPhoto.error || "Your photo could not be uploaded.");
+      throw new Error([savedPhoto.error || "Your photo could not be uploaded.", savedPhoto.reason].filter(Boolean).join(" "));
     }
 
     const emptyMessage = dishGalleryStatus.textContent.startsWith("No photos")
