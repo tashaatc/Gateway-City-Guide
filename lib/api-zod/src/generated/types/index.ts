@@ -14,6 +14,7 @@ export * from './chatResponse';
 export * from './chatSettings';
 export * from './chatSettingsInput';
 export * from './chatUsage';
+export * from './createDishPhoto422';
 export * from './dishPhoto';
 export * from './dishPhotoInput';
 export * from './dishPhotoMimeType';

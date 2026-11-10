@@ -119,6 +119,24 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ApiError"
+        "422":
+          description: The inspector did not approve the photo as toasted ravioli
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [error, reason]
+                properties:
+                  error:
+                    type: string
+                  reason:
+                    type: string
+        "502":
+          description: The inspector is unavailable; nothing was saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
   /dishes/{id}/image:
     get:
       operationId: getDishPhotoImage
