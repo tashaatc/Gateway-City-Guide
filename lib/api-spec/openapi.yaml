@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: chat
     description: St. Louis city guide chat
+  - name: dishes
+    description: Visitor-submitted St. Louis food photos
 paths:
   /healthz:
     get:
@@ -74,6 +76,89 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/SystemPromptResponse"
+  /dishes:
+    get:
+      operationId: listDishPhotos
+      tags: [dishes]
+      summary: List visitor dish photos
+      responses:
+        "200":
+          description: Dish photos, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/DishPhoto"
+    post:
+      operationId: createDishPhoto
+      tags: [dishes]
+      summary: Upload a dish photo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DishPhotoInput"
+      responses:
+        "201":
+          description: The saved dish photo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DishPhoto"
+        "400":
+          description: Invalid title or unsupported image
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "413":
+          description: Image exceeds the 3 MB limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /dishes/{id}/image:
+    get:
+      operationId: getDishPhotoImage
+      tags: [dishes]
+      summary: Get a dish photo image
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        "200":
+          description: The stored image bytes
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            image/png:
+              schema:
+                type: string
+                format: binary
+            image/webp:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid dish photo ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "404":
+          description: Dish photo not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
 components:
   schemas:
     HealthStatus:
@@ -163,6 +248,41 @@ components:
         systemPrompt:
           type: string
       required: [systemPrompt]
+    DishPhotoInput:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 120
+        caption:
+          type: string
+          maxLength: 500
+        image:
+          type: string
+          description: A JPEG, PNG, or WebP data URL, up to 3 MB decoded.
+          maxLength: 4194400
+      required: [title, image]
+    DishPhoto:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        caption:
+          type: string
+        mimeType:
+          type: string
+          enum: [image/jpeg, image/png, image/webp]
+        inspectorNote:
+          type: [string, "null"]
+        createdAt:
+          type: string
+          format: date-time
+        imageUrl:
+          type: string
+      required: [id, title, caption, mimeType, inspectorNote, createdAt, imageUrl]
     ApiError:
       type: object
       properties:

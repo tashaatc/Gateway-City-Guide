@@ -4,6 +4,14 @@ const likeForm = document.querySelector("#like-form");
 const likeInput = document.querySelector("#like-input");
 const likeList = document.querySelector("#like-list");
 const listStatus = document.querySelector("#list-status");
+const dishUploadForm = document.querySelector("#dish-upload-form");
+const dishTitleInput = document.querySelector("#dish-title");
+const dishCaptionInput = document.querySelector("#dish-caption");
+const dishImageInput = document.querySelector("#dish-image");
+const dishUploadButton = document.querySelector("#dish-upload-button");
+const dishUploadStatus = document.querySelector("#dish-upload-status");
+const dishGalleryGrid = document.querySelector("#dish-gallery-grid");
+const dishGalleryStatus = document.querySelector("#dish-gallery-status");
 const chatForm = document.querySelector("#chat-form");
 const chatInput = document.querySelector("#chat-input");
 const chatThread = document.querySelector("#chat-thread");
@@ -16,6 +24,13 @@ const maxTokensInput = document.querySelector("#max-tokens");
 
 // Keep the visitor's additions in memory for this page view only.
 const favorites = [];
+const MAX_DISH_IMAGE_BYTES = 3 * 1024 * 1024;
+const MAX_DISH_IMAGE_EDGE = 1280;
+const ACCEPTED_DISH_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
 
 // Keep chat history in memory too; it is sent only when asking the guide again.
 const conversationHistory = [];
@@ -48,6 +63,194 @@ likeForm.addEventListener("submit", (event) => {
   listStatus.textContent = `Added to your list. ${favorites.length} ${favorites.length === 1 ? "favorite" : "favorites"} so far.`;
   likeInput.focus();
 });
+
+function readBlobAsDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(new Error("The photo could not be read."));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function resizeDishPhoto(file) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(
+    1,
+    MAX_DISH_IMAGE_EDGE / Math.max(bitmap.width, bitmap.height),
+  );
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+  canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    bitmap.close();
+    throw new Error("Your browser could not prepare this photo.");
+  }
+
+  context.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close();
+
+  const resizedBlob = await new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error("Your browser could not resize this photo."));
+      },
+      file.type,
+      0.86,
+    );
+  });
+
+  if (!ACCEPTED_DISH_IMAGE_TYPES.has(resizedBlob.type)) {
+    throw new Error("Choose a JPEG, PNG, or WebP photo.");
+  }
+  if (resizedBlob.size > MAX_DISH_IMAGE_BYTES) {
+    throw new Error("This photo is still over 3 MB after resizing. Choose a smaller image.");
+  }
+
+  return readBlobAsDataUrl(resizedBlob);
+}
+
+function formatDishDate(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+  }).format(date);
+}
+
+function createDishPhotoCard(photo) {
+  const card = document.createElement("article");
+  card.className = "dish-photo-card";
+
+  const figure = document.createElement("figure");
+  figure.className = "dish-photo-figure";
+  const image = document.createElement("img");
+  image.src = photo.imageUrl;
+  image.alt = photo.caption
+    ? `${photo.title}: ${photo.caption}`
+    : photo.title;
+  image.loading = "lazy";
+  image.decoding = "async";
+  figure.append(image);
+
+  const copy = document.createElement("div");
+  copy.className = "dish-photo-copy";
+  const title = document.createElement("h3");
+  title.textContent = photo.title;
+  copy.append(title);
+
+  if (photo.caption) {
+    const caption = document.createElement("p");
+    caption.textContent = photo.caption;
+    copy.append(caption);
+  }
+
+  const date = document.createElement("time");
+  date.className = "dish-photo-date";
+  date.dateTime = photo.createdAt;
+  date.textContent = formatDishDate(photo.createdAt);
+  copy.append(date);
+
+  card.append(figure, copy);
+  return card;
+}
+
+function showEmptyDishGallery() {
+  dishGalleryStatus.textContent = "No photos yet. Share the first plate!";
+}
+
+async function loadDishGallery() {
+  try {
+    const response = await fetch("/api/dishes");
+    const photos = await response.json();
+    if (!response.ok) {
+      throw new Error(photos.error || "The dish gallery could not load.");
+    }
+
+    dishGalleryGrid.replaceChildren();
+    photos.forEach((photo) => {
+      dishGalleryGrid.append(createDishPhotoCard(photo));
+    });
+    if (photos.length === 0) showEmptyDishGallery();
+    else dishGalleryStatus.textContent = "";
+  } catch (error) {
+    dishGalleryStatus.textContent =
+      error instanceof Error
+        ? error.message
+        : "The dish gallery could not load. Please refresh the page.";
+    dishGalleryStatus.classList.add("dish-gallery-status--error");
+  }
+}
+
+dishUploadForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const title = dishTitleInput.value.trim();
+  const caption = dishCaptionInput.value.trim();
+  const file = dishImageInput.files[0];
+
+  if (!title) {
+    dishUploadStatus.textContent = "Add a name for the dish.";
+    dishTitleInput.focus();
+    return;
+  }
+  if (!file) {
+    dishUploadStatus.textContent = "Choose a photo to share.";
+    dishImageInput.focus();
+    return;
+  }
+  if (!ACCEPTED_DISH_IMAGE_TYPES.has(file.type)) {
+    dishUploadStatus.textContent = "Choose a JPEG, PNG, or WebP photo. GIFs are not supported.";
+    dishImageInput.value = "";
+    return;
+  }
+  if (file.size > MAX_DISH_IMAGE_BYTES) {
+    dishUploadStatus.textContent = "This photo is over 3 MB. Choose a smaller image.";
+    dishImageInput.value = "";
+    return;
+  }
+
+  dishUploadButton.disabled = true;
+  dishUploadForm.setAttribute("aria-busy", "true");
+  dishUploadStatus.classList.remove("dish-upload-status--error");
+  dishUploadStatus.textContent = "Preparing your photo…";
+
+  try {
+    const image = await resizeDishPhoto(file);
+    dishUploadStatus.textContent = "Sharing your plate…";
+
+    const response = await fetch("/api/dishes", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, caption, image }),
+    });
+    const savedPhoto = await response.json();
+    if (!response.ok) {
+      throw new Error(savedPhoto.error || "Your photo could not be uploaded.");
+    }
+
+    const emptyMessage = dishGalleryStatus.textContent.startsWith("No photos")
+      ? true
+      : false;
+    if (emptyMessage) dishGalleryStatus.textContent = "";
+    dishGalleryGrid.prepend(createDishPhotoCard(savedPhoto));
+    dishUploadForm.reset();
+    dishUploadStatus.textContent = "Your photo is at the top of the gallery. Thanks for sharing!";
+  } catch (error) {
+    dishUploadStatus.classList.add("dish-upload-status--error");
+    dishUploadStatus.textContent =
+      error instanceof Error
+        ? error.message
+        : "Your photo could not be uploaded. Please try again.";
+  } finally {
+    dishUploadButton.disabled = false;
+    dishUploadForm.removeAttribute("aria-busy");
+  }
+});
+
+loadDishGallery();
 
 // Read the exact prompt used by the API so visitors can inspect it in Prompt Lab.
 fetch("/api/chat/system-prompt")

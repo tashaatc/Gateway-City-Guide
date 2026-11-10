@@ -79,6 +79,41 @@ export interface SystemPromptResponse {
   systemPrompt: string;
 }
 
+export interface DishPhotoInput {
+  /**
+     * @minLength 1
+     * @maxLength 120
+     */
+  title: string;
+  /** @maxLength 500 */
+  caption?: string;
+  /**
+     * A JPEG, PNG, or WebP data URL, up to 3 MB decoded.
+     * @maxLength 4194400
+     */
+  image: string;
+}
+
+export type DishPhotoMimeType = typeof DishPhotoMimeType[keyof typeof DishPhotoMimeType];
+
+
+export const DishPhotoMimeType = {
+  'image/jpeg': 'image/jpeg',
+  'image/png': 'image/png',
+  'image/webp': 'image/webp',
+} as const;
+
+export interface DishPhoto {
+  id: number;
+  title: string;
+  caption: string;
+  mimeType: DishPhotoMimeType;
+  /** @nullable */
+  inspectorNote: string | null;
+  createdAt: string;
+  imageUrl: string;
+}
+
 export interface ApiError {
   error: string;
 }
