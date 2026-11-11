@@ -9,6 +9,31 @@ import * as zod from 'zod';
 
 
 /**
+ * @summary Search Unsplash for the configured city's favorite dish
+ */
+export const GetDishInspirationResponseItem = zod.object({
+  "id": zod.string(),
+  "imageUrl": zod.string().url(),
+  "rawUrl": zod.string().url(),
+  "altText": zod.string(),
+  "photographerName": zod.string(),
+  "photographerProfileUrl": zod.string().url(),
+  "downloadLocation": zod.string().url()
+})
+export const GetDishInspirationResponse = zod.array(GetDishInspirationResponseItem).max(6)
+
+
+/**
+ * @summary Register an inspiration photo expansion with Unsplash
+ */
+export const TrackInspirationDownloadBody = zod.object({
+  "downloadLocation": zod.string().url()
+})
+
+export const TrackInspirationDownloadResponse = zod.void()
+
+
+/**
  * Returns server health status
  * @summary Health check
  */

@@ -61,3 +61,28 @@ This project was developed as part of a hands-on CodeSquad training exercise usi
 
 Created as part of my software development learning journey.
   
+
+## Unsplash Inspiration Grid (Feature 4)
+
+The section below the visitor gallery searches Unsplash live for `St. Louis toasted ravioli`, built from `CITY_CONFIG.name` and `CITY_CONFIG.favoriteDish` in `artifacts/api-server/src/city.ts`.
+
+Setup in Replit:
+
+1. Create an application at https://unsplash.com/developers and copy its **Access Key** (not its Secret Key).
+2. Store it in Replit Secrets as `UNSPLASH_ACCESS_KEY`. Never put it in frontend code or commit it.
+3. Pull the feature changes into Replit. Run `pnpm install` and rebuild/restart the existing API server, as with Feature 3. Refresh Preview.
+4. Republish after testing to update the public site; include the secret in the published app's configuration.
+
+`GET /api/unsplash/dish-inspiration` returns up to six photos with the seven assignment fields. Missing credentials produce a friendly 503 with configuration instructions. Invalid credentials, rate limits, network errors, and empty results also have readable states. Refresh performs another live search; Unsplash may return the same photos for the same query. The app does not broaden the query or invent results when there are fewer than six. Search relevance and availability depend on Unsplash's catalog; these images are inspiration and are not AI-inspected uploads.
+
+Images are hotlinked using the URLs returned by Unsplash, preserving `ixid`. Photographer and Unsplash links use `utm_source=gateway_city_guide&utm_medium=referral` and open in a new tab. Selecting a photo calls `POST /api/unsplash/dish-inspiration/download`, which makes an authenticated server-side GET to its returned `download_location` before displaying a high-resolution dialog. No tracking call is made simply for rendering thumbnails. The app validates the download destination to prevent arbitrary URL requests and never sends its access key to the browser.
+
+Manual checks:
+
+- With a valid key, load the page and see up to six live, credited photos below the visitor gallery. Inspect the search request to confirm the configured dish query.
+- Refresh and verify another request occurs and the button recovers from loading.
+- Open a photographer credit: it should open their Unsplash profile in a new tab with both attribution parameters.
+- Select a photo: verify a tracking POST succeeds before its high-resolution dialog opens. Close with the Close button or Escape.
+- Remove the key temporarily and restart the API: the GET should return 503 and the grid should explain how to configure `UNSPLASH_ACCESS_KEY`; the rest of the site should continue working. Restore the key afterwards.
+
+Reference: https://unsplash.com/documentation and https://help.unsplash.com/en/articles/2511315-guideline-attribution

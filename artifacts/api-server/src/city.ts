@@ -1,3 +1,9 @@
+// Part A configuration: use these values when building dish-related requests.
+export const CITY_CONFIG = {
+  name: "St. Louis",
+  favoriteDish: "toasted ravioli",
+} as const;
+
 // Keep these values in sync with the facts shown on the St. Louis Guide page.
 export const CITY_FACTS = [
   "St. Louis is nicknamed the Gateway to the West.",

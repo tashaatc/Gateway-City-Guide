@@ -12,6 +12,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Allura&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500;6..96,600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./style.css">
     <script type="module" src="./script.js"></script>
+    <script type="module" src="./inspiration.js"></script>
   </head>
   <body>
     <div class="page-shell">
@@ -125,6 +126,29 @@
             </div>
           </div>
         </section>
+
+        <section class="inspiration-section" id="inspiration" aria-labelledby="inspiration-heading">
+          <div class="wrap">
+            <div class="inspiration-heading-row">
+              <div>
+                <p class="section-kicker">A little food inspiration</p>
+                <h2 class="section-title" id="inspiration-heading">Inspiration Grid</h2>
+                <p>Food photography from Unsplash, inspired by our city's favorite dish. Select a photo to take a closer look.</p>
+              </div>
+              <button class="inspiration-refresh" id="inspiration-refresh" type="button">Refresh Inspiration</button>
+            </div>
+            <p class="inspiration-status" id="inspiration-status" role="status" aria-live="polite">Loading food inspiration…</p>
+            <div class="inspiration-grid" id="inspiration-grid" aria-label="Unsplash food inspiration photos" aria-busy="true"></div>
+          </div>
+        </section>
+        <dialog class="inspiration-dialog" id="inspiration-dialog" aria-labelledby="inspiration-dialog-title">
+          <div class="inspiration-dialog-top">
+            <h2 id="inspiration-dialog-title">A closer look</h2>
+            <form method="dialog"><button type="submit" aria-label="Close inspiration photo">Close ×</button></form>
+          </div>
+          <img id="inspiration-expanded-image" alt="">
+          <p id="inspiration-expanded-credit" class="inspiration-credit"></p>
+        </dialog>
 
         <section class="chat-section" id="chat" aria-labelledby="chat-heading">
           <div class="wrap chat-intro">

@@ -19,4 +19,6 @@ export * from './dishPhoto';
 export * from './dishPhotoInput';
 export * from './dishPhotoMimeType';
 export * from './healthStatus';
+export * from './inspirationDownloadInput';
+export * from './inspirationPhoto';
 export * from './systemPromptResponse';
