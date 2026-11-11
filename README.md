@@ -64,7 +64,7 @@ Created as part of my software development learning journey.
 
 ## Unsplash Inspiration Grid (Feature 4)
 
-The section below the visitor gallery searches Unsplash live for `St. Louis toasted ravioli`, built from `CITY_CONFIG.name` and `CITY_CONFIG.favoriteDish` in `artifacts/api-server/src/city.ts`.
+The section below the visitor gallery searches Unsplash live for `toasted ravioli`, built from `CITY_CONFIG.favoriteDish` in `artifacts/api-server/src/city.ts`.
 
 Setup in Replit:
 

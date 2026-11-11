@@ -3,7 +3,7 @@ import { z } from "zod";
 import { CITY_CONFIG } from "../city";
 
 const router: IRouter = Router();
-export const DISH_INSPIRATION_QUERY = `${CITY_CONFIG.name} ${CITY_CONFIG.favoriteDish}`;
+export const DISH_INSPIRATION_QUERY = CITY_CONFIG.favoriteDish;
 const APP_NAME = "gateway_city_guide";
 const MISSING_KEY = "Food inspiration is not configured yet. Add UNSPLASH_ACCESS_KEY to Replit Secrets to enable it.";
 

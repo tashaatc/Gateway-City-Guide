@@ -57,7 +57,7 @@ describe("Unsplash food inspiration", () => {
     const [url, options] = providerFetch.mock.calls[0];
     expect(url.origin + url.pathname).toBe("https://api.unsplash.com/search/photos");
     expect(url.searchParams.get("query")).toBe(DISH_INSPIRATION_QUERY);
-    expect(DISH_INSPIRATION_QUERY).toBe("St. Louis toasted ravioli");
+    expect(DISH_INSPIRATION_QUERY).toBe("toasted ravioli");
     expect(url.searchParams.get("per_page")).toBe("6");
     expect(options.headers.Authorization).toBe("Client-ID test-private-key");
     expect(options.redirect).toBe("error");
