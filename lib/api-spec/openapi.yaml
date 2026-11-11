@@ -15,6 +15,65 @@ tags:
   - name: dishes
     description: Visitor-submitted St. Louis food photos
 paths:
+  /unsplash/dish-inspiration:
+    get:
+      operationId: getDishInspiration
+      tags: [dishes]
+      summary: Search Unsplash for the configured city's favorite dish
+      responses:
+        "200":
+          description: Up to six live Unsplash photos
+          content:
+            application/json:
+              schema:
+                type: array
+                maxItems: 6
+                items:
+                  $ref: "#/components/schemas/InspirationPhoto"
+        "503":
+          description: Unsplash Access Key is missing, invalid, or temporarily rate limited
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Unsplash could not be reached or returned an invalid response
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+  /unsplash/dish-inspiration/download:
+    post:
+      operationId: trackInspirationDownload
+      tags: [dishes]
+      summary: Register an inspiration photo expansion with Unsplash
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InspirationDownloadInput"
+      responses:
+        "204":
+          description: Unsplash registered the selection
+        "400":
+          description: Invalid Unsplash download location
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "503":
+          description: Unsplash is unconfigured or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+        "502":
+          description: Tracking request failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
   /healthz:
     get:
       operationId: healthCheck
@@ -179,6 +238,35 @@ paths:
                 $ref: "#/components/schemas/ApiError"
 components:
   schemas:
+    InspirationDownloadInput:
+      type: object
+      required: [downloadLocation]
+      properties:
+        downloadLocation:
+          type: string
+          format: uri
+    InspirationPhoto:
+      type: object
+      required: [id, imageUrl, rawUrl, altText, photographerName, photographerProfileUrl, downloadLocation]
+      properties:
+        id:
+          type: string
+        imageUrl:
+          type: string
+          format: uri
+        rawUrl:
+          type: string
+          format: uri
+        altText:
+          type: string
+        photographerName:
+          type: string
+        photographerProfileUrl:
+          type: string
+          format: uri
+        downloadLocation:
+          type: string
+          format: uri
     HealthStatus:
       type: object
       properties:
